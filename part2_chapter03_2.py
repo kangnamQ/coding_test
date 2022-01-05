@@ -31,5 +31,118 @@ Part 2 - Chapter 03 - Q2 (page 92)
     - 46
 """
 
+# -----------------------------------
+print("\n -*-*-*-*-*- First -*-*-*-*-*- \n")
+
+# list(map(int,input().split())) 의 작동 방식
+# 1. input()으로 받은 문자열을 split()으로 공백 단위로 쪼개 리스트로 나눈다.
+# 2. map을 이용해 리스트의 모든 원소에 int()를 적용
+# 3. list로 변환해 준다.
+
+N, M, K = map(int, input().split())
+
+array = list(map(int, input().split()))
+
+if 2 > N > 1000 or 1 > M > 10000 or 1 > K > 10000:
+    print("입력 조건 1 불만족")
+    raise ValueError
+if len(array) != N:
+    print("입력 조건 2 불만족")
+    raise ValueError
+if K > M:
+    print("입력 조건 3 불만족")
+    raise ValueError
+
+array.sort(reverse=True)
+# .sort()는 오름차순 정렬 (점점 커짐)
+
+first_large = array[0]
+second_large = array[1]
+count = -1
+sum = 0
+
+for loop in range(M):
+    count += 1
+    if count == K:
+        count = -1
+        sum += second_large
+    else:
+        sum += first_large
+
+print("총 합 : ", sum)
+
+"""
+입력 예시 :
+    - 5 8 3
+    - 2 4 5 4 6
+    6+6+6+5+6+6+6+5 = 46
+    46이 나와야 정상 //
+    
+실행 결과 :
+5 8 3
+2 4 5 4 6
+총 합 :  46
+"""
+
+# 1. 입력 조건은 굳이 코드로 제한 할 필요가 없는 듯 하다.
+# 2. 위의 코드도 해당 조건 안에선 시간제한 1초, 메모리제한 128MB으로 만족할 것이지만 만약 M이 커진다면 초과할 가능성이 있다고함.
+# (실제로 시간이나 메모리를 체크해보는 것이 중요한듯)
+
+# -----------------------------------
+print("\n -*-*-*-*-*- Second -*-*-*-*-*- \n")
+
+"""
+재밌는 방법을 사용했는데 해당 문제를 반복되는 수열로 보고 일반화하여 푸는 방법이다.
+입력 예시로 예를 들자면 6 + 6 + 6 + 5 + 6 + 6 + 6 + 5 로 계산되는 규칙에서 (K+1)의 형태로 반복된다는 점을 사용하였음
+> K + 1인 이유는 K번만 반복해야 함으로 가장 큰수를 K번 더한 뒤 한번은 다른 수를 더해야 하는 규칙 때문 (2번은 다른 수를 둬야할 경우엔 (K+2)겠지) 
+"""
+
+N, M, K = map(int, input().split())
+array = list(map(int, input().split()))
+array.sort(reverse=True)
+
+first_large = array[0]
+second_large = array[1]
+
+count = int(M / (K+1)) * K
+# int(M/(K+1))으로 몇번의 반복이 일어나는지 파악
+# > 여기서 int가 들어간 이유는 나누어 떨어지지 않을 경우...(M이 9인데 K가 3이거나 할경우(9/4))를 방지하기 위하여
+# 몇번 반복되는지 알았다면 K를 곱해주면 큰 수가 더해진 수를 알 수 있게 됨
+# > 예시는 M = 8, K = 3 이니 int(8/4) = 2가 나오게 되는데 K번 반복이니 총 2K번의 큰 수가 들어가 있음
+# >> 개인적으로 여기서 int(M/(K+1))의 수 자체가 두번째로 큰수가 나오는 수가 되는데 그냥 이걸 곱하면 되지 않을까? 라는 생각이듬
+# >>> 마지막까지 다녀오니 count는 큰 수의 반복되는 수를 구하려고 구하고있어 마지막에 M-count 만 해주면 두번째 큰 수가 되므로 굳이 불필요한 과정을 거치지 않는것이 좋은듯
+
+count += M % (K+1)
+# 만약 나누어 떨어지지 않았을 경우 나머지를 구하기 위함
+# 9%4 = 1 -> 2 + 1 3
+# > 이걸 그냥 더해도 되는 이유는... 반복이 안일어 났다는 건 큰수만 더하고 있다는 의미이므로 더함
+# >> 따라서 현재 count는 큰수가 나오는 수와 동일함
+
+sum = 0
+sum += (count) * first_large
+# count가 큰 수가 나오는 수와 동일함으로 큰수의 합을 구함
+sum += (M - count) * second_large
+# 총 반복 횟수 = 큰 수가 나옷 횟수 + 두번째 큰 수가 나온 횟수
+# 총 반복 횟수 - 큰 수가 나온 횟수 = 두번째 큰 수가 나온 횟수
+# > 따라서 두번째로 큰 수가 나온 횟수만 남게 되어 두번째로 큰 수의 합을 더해줌
+
+print("총 합 : ", sum)
 
 
+# -------------------------------------------
+print("\n -*-*-*-*-*- Final -*-*-*-*-*- \n")
+
+N, M, K = map(int, input().split())
+array = list(map(int, input().split()))
+array.sort(reverse=True)
+
+first_large = array[0]
+second_large = array[1]
+
+count = int(M / (K+1)) * K
+count += M % (K+1)
+sum = 0
+sum += (count) * first_large
+sum += (M - count) * second_large
+
+print("총 합 : ", sum)
